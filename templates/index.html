@@ -1,40 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Live Video Feed</title>
-    <!-- Add Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #0F1419; /* Ayu theme dark background color */
-            color: #CBCCC6; /* Ayu theme foreground color */
-        }
-        .navbar {
-            background-color: #0A0E14; /* Ayu theme UI background color */
-        }
-        .container {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        img {
-            border-radius: 0.25rem; /* Rounded corners */
-        }
-    </style>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="../static/styles.css" rel="stylesheet">
+
+    <title>Servo Vision</title>
 </head>
+
 <body>
-    <nav class="navbar navbar-dark">
-        <a class="navbar-brand" href="#">Live Video Stream</a>
-    </nav>
-    <div class="container">
-        <img src="/video_feed" class="img-fluid" alt="Live Video Stream">
+    <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="row">
+            <div class="col text-center">
+                <h1>Servo Vision</h1>
+                <h2> via the Portenta H7</h2>
+                <div class="container">
+                    <img src="/video_feed" class="img-fluid" alt="Live Video Stream">
+                </div>
+                <button id="panLeft" class="btn btn-primary m-2">Pan Left</button>
+                <button id="panRight" class="btn btn-primary m-2">Pan Right</button>
+                <button id="tiltUp" class="btn btn-primary m-2">Tilt Up</button>
+                <button id="tiltDown" class="btn btn-primary m-2">Tilt Down</button>
+                <button id="manualControl" class="btn btn-secondary m-2">Manual Control</button>
+            </div>
+        </div>
     </div>
-    <!-- Add Bootstrap JavaScript and dependencies -->
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="servo.js"></script>
 </body>
+
 </html>
