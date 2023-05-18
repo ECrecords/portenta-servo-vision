@@ -13,12 +13,40 @@ system context.
 import sensor, image, time
 import usocket, network
 import gc
+from pyb import Servo, Pin, Timer
 
 # Setting the clock
 clock = time.clock()
 
 # Setting the IP address and port number
-address = ('192.168.0.141', 6060)
+address = ('192.168.0.175', 6060)
+
+# Constants for pan and tilt
+PAN_FACTOR = 2
+TILT_FACTOR = 2
+
+
+# Create a Timer object on Timer 3 with a frequency of 50Hz
+timer1 = Timer(3, freq=50)
+
+# Create Pin objects for the tilt and pan servo pins
+# The tilt servo is on pin "PC6" and the pan servo is on pin "PC7"
+# The pins are set to output mode with push-pull type and no pull resistors
+tilt_servo_pin = Pin("PC7", Pin.OUT_PP, Pin.PULL_NONE)
+pan_servo_pin = Pin("PC6", Pin.OUT_PP, Pin.PULL_NONE)
+
+# Create PWM channels on the Timer for each servo
+# The tilt servo is on channel 1 and the pan servo is on channel 2
+# The initial pulse width is set to 0
+tilt = timer1.channel(1, Timer.PWM, pin=tilt_servo_pin, pulse_width=1000)
+pan = timer1.channel(2, Timer.PWM, pin=pan_servo_pin , pulse_width=1000)
+
+# Set the initial pulse width percentage to 50% for both servos
+# This typically corresponds to the middle position for servos
+tilt.pulse_width_percent(50)
+pan.pulse_width_percent(50)
+
+
 
 def init_sensor():
     '''
@@ -42,6 +70,22 @@ def init_sensor():
     # Turning off auto gain to prevent image washout
     sensor.set_auto_gain(False)
 
+
+def get_closest_face(objects):
+    '''
+    Function to get the closest face from a list of bounding boxes.
+    It assumes the closest face is the one with the largest area.
+    '''
+    if not objects:
+        return None
+    else:
+        # Sort the list of objects based on the area of the bounding box (width * height)
+        objects.sort(key=lambda r: r[2]*r[3], reverse=True)
+
+        # The closest face will be the first object in the sorted list
+        return objects[0]
+
+
 def main():
     '''
     Main function to run the program.
@@ -61,6 +105,10 @@ def main():
     face_cascade = image.HaarCascade("frontalface", stages=25)
 
     # Infinite loop to continuously capture and send images
+
+    pulse_ms = 1;
+    tilt.pulse_width(1000)
+    pan.pulse_width(1000)
     while True:
         clock.tick()
 
@@ -79,8 +127,30 @@ def main():
 
         objects = img.find_features(face_cascade, threshold=0.75, scale_factor=1.25)
 
-        for r in objects:
-            img.draw_rectangle(r)
+        closest_face = None
+        # Find the closest face
+        if len(objects) >= 1:
+            closest_face = objects[0] #get_closest_face(objects)
+
+        # If a face was found, draw a rectangle around it and center the face
+        if closest_face is not None:
+            img.draw_rectangle(closest_face)
+
+            # Calculate error between center of image and center of face
+            img_width, img_height = img.width(), img.height()  # Assumes you have these methods
+            face_x, face_y, face_width, face_height = closest_face
+            face_center_x = face_x + face_width // 2
+            face_center_y = face_y + face_height // 2
+
+            pan_error = img_width // 2 - face_center_x
+            tilt_error = img_height // 2 - face_center_y
+
+            # Adjust servo positions. Clamp values between 1000us and 2000us to avoid damaging the servos.
+            pan_pulse_width = min(max(pan.pulse_width() + PAN_FACTOR * pan_error, 1000), 3500)
+            tilt_pulse_width = min(max(tilt.pulse_width() + TILT_FACTOR * tilt_error, 1000), 3500)
+
+            pan.pulse_width(pan_pulse_width)
+            tilt.pulse_width(tilt_pulse_width)
 
 
         # Compressing the image
