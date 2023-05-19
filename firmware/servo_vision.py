@@ -24,7 +24,9 @@ address = ('192.168.0.175', 6060)
 # Constants for pan and tilt
 PAN_FACTOR = 2
 TILT_FACTOR = 2
-
+MAX_PULSEWIDTH = 4200
+MIN_PULSEWIDTH = 560
+DEFAULT_TILT_PULSEWIDTH = 1000
 
 # Create a Timer object on Timer 3 with a frequency of 50Hz
 timer1 = Timer(3, freq=50)
@@ -37,14 +39,8 @@ pan_servo_pin = Pin("PC6", Pin.OUT_PP, Pin.PULL_NONE)
 
 # Create PWM channels on the Timer for each servo
 # The tilt servo is on channel 1 and the pan servo is on channel 2
-# The initial pulse width is set to 0
-tilt = timer1.channel(1, Timer.PWM, pin=tilt_servo_pin, pulse_width=1000)
-pan = timer1.channel(2, Timer.PWM, pin=pan_servo_pin , pulse_width=1000)
-
-# Set the initial pulse width percentage to 50% for both servos
-# This typically corresponds to the middle position for servos
-tilt.pulse_width_percent(50)
-pan.pulse_width_percent(50)
+tilt = timer1.channel(1, Timer.PWM, pin=tilt_servo_pin, pulse_width=DEFAULT_TILT_PULSEWIDTH )
+pan = timer1.channel(2, Timer.PWM, pin=pan_servo_pin , pulse_width=MIN_PULSEWIDTH)
 
 
 
@@ -107,8 +103,6 @@ def main():
     # Infinite loop to continuously capture and send images
 
     pulse_ms = 1;
-    tilt.pulse_width(1000)
-    pan.pulse_width(1000)
     while True:
         clock.tick()
 
@@ -146,8 +140,8 @@ def main():
             tilt_error = img_height // 2 - face_center_y
 
             # Adjust servo positions. Clamp values between 1000us and 2000us to avoid damaging the servos.
-            pan_pulse_width = min(max(pan.pulse_width() + PAN_FACTOR * pan_error, 1000), 3500)
-            tilt_pulse_width = min(max(tilt.pulse_width() + TILT_FACTOR * tilt_error, 1000), 3500)
+            pan_pulse_width = min(max(pan.pulse_width() + PAN_FACTOR * pan_error, MIN_PULSEWIDTH), MAX_PULSEWIDTH)
+            tilt_pulse_width = min(max(tilt.pulse_width() + TILT_FACTOR * tilt_error, MIN_PULSEWIDTH), MAX_PULSEWIDTH)
 
             pan.pulse_width(pan_pulse_width)
             tilt.pulse_width(tilt_pulse_width)
@@ -156,7 +150,7 @@ def main():
         # Compressing the image
         compressed_img = img.compress(50)
 
-        # Creating a socket and sending the image over the network
+         #Creating a socket and sending the image over the network
         sock = usocket.socket(usocket.AF_INET, usocket.SOCK_DGRAM)
         sock.sendto(compressed_img, address)
         sock.close()
