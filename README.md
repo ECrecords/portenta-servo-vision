@@ -3,16 +3,6 @@
 The Portenta Servo Vision project is a Python Flask web application served from a Raspberry Pi 4 that enables remote control and live video streaming from a Portenta H7 board equipped with a Portenta Vision Shield.
 
 ## Directory Structure
-
-Sure, here is a revised version of the README file content:
-
-markdown
-
-# Portenta Servo Vision
-
-The Portenta Servo Vision project is a Python Flask web application served from a Raspberry Pi 4 that enables remote control and live video streaming from a Portenta H7 board equipped with a Portenta Vision Shield.
-
-## Directory Structure
 ```
 portenta-servo-vision/
 ├── LICENSE
