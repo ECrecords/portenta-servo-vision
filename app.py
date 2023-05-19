@@ -23,7 +23,7 @@ app = Flask(__name__)
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 # Bind the socket to a specific network interface and port number
-server_address = ('10.209.6.15', 6060)  # adjust as needed
+server_address = ('192.168.0.175', 6060)  # adjust as needed
 sock.bind(server_address)
 
 def generate():
@@ -56,4 +56,4 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    app.run(host='10.209.6.15', port=5000)  # adjust as needed
+    app.run(host='192.168.0.175', port=5000)  # adjust as needed
