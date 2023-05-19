@@ -1,6 +1,6 @@
 '''
 ======================================================================================
-File Name: image_stream.py
+File Name: servo_vision.py
 Author: Elvis Chino-Islas
 Date: 09/05/2023
 Description: This Python script captures images from a sensor, compresses them, and

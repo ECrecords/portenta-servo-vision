@@ -1,6 +1,6 @@
 '''
 ======================================================================================
-File Name: live_stream.py
+File Name: app.py
 Author: Elvis Chino-Islas
 Date: 10/05/2023
 Description: This Python script receives images from a UDP stream and serves them as 
